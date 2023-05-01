@@ -26,7 +26,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','reservation_time',
     ];
 
     /**
@@ -58,4 +58,25 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function getReservationTimeAttribute($value)
+{
+    $today = now();
+    $startOfMonth = $today->startOfMonth();
+    $endOfMonth = $today->endOfMonth();
+    
+    $reservations = $this->reservations()->whereBetween('created_at', [$startOfMonth, $endOfMonth])->get();
+
+    $totalTime = 0;
+
+    foreach ($reservations as $reservation) {
+        $totalTime += $reservation->duration;
+    }
+
+    return $totalTime;
+}
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
 }

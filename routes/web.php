@@ -29,3 +29,4 @@ Route::middleware([
         return view('reservas');
     })->name('reservas');
 });
+
